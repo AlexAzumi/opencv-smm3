@@ -1,8 +1,8 @@
 # OpenCV - Métodos Matemáticos 3
 
-<h2 align='center'>
-Centro Universitario de Ciencias Exactas e Ingenierías
-</h2>
+<h3 align='center'>
+Centro Universitario de Ciencias Exactas e Ingenierías - Ingeniería en Computación
+</h3>
 
 ---
 
