@@ -7,13 +7,38 @@ from dotenv import load_dotenv
 # Load environment variables
 load_dotenv()
 
-# Database connection
-connection = psycopg2.connect(
-    host=os.getenv('DATABASE_HOST'),
-    database=os.getenv('DATABASE_NAME'),
-    user=os.getenv('DATABASE_USER'),
-    password=os.getenv('DATABASE_PASSWORD'),
-    port=os.getenv('DATABASE_PORT'))
+
+def connectToDatabase():
+  connection = None
+  try:
+    # Create connection
+    print('Connecting to PostgreSQL database...')
+    connection = psycopg2.connect(
+        host=os.getenv('DATABASE_HOST'),
+        database=os.getenv('DATABASE_NAME'),
+        user=os.getenv('DATABASE_USER'),
+        password=os.getenv('DATABASE_PASSWORD'),
+        port=os.getenv('DATABASE_PORT'))
+
+    # Create a cursor
+    cursor = connection.cursor()
+
+    # Execute a statement
+    print('PostgreSQL database version:')
+    cursor.execute('SELECT version()')
+
+    # Display the PostgreSQL database server version
+    db_version = cursor.fetchone()
+    print(db_version)
+
+    return cursor
+  except:
+    print('Cannot connect to database')
+    return None
+
+
+# Connect to the PostgreSQL database
+dbCursor = connectToDatabase()
 
 try:
   videoParam = str(sys.argv[1])
@@ -34,7 +59,12 @@ object_detector = cv2.createBackgroundSubtractorMOG2(
 
 while True:
   ret, frame = capture.read()
-  height, width, _ = frame.shape
+
+  try:
+    height, width, _ = frame.shape
+  except:
+    print('\nEnd of the video')
+    break
 
   # Extract "region of interest"
   roi = frame[region[0]: region[1], region[2]: region[3]]
@@ -53,9 +83,9 @@ while True:
       x, y, w, h = cv2.boundingRect(cnt)
       cv2.rectangle(roi, (x, y), (x + w, y + h), (0, 255, 0), 3)
 
-  cv2.imshow("roi", roi)
-  cv2.imshow("Frame", frame)
-  cv2.imshow("Mask", mask)
+  # cv2.imshow("roi", roi)
+  # cv2.imshow("Mask", mask)
+  cv2.imshow("Computer Vision | Luxtlalli", frame)
 
   # Wait for a key press
   key = cv2.waitKey(30)
