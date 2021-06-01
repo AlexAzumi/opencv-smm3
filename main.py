@@ -1,5 +1,19 @@
+import os
 import sys
 import cv2
+import psycopg2
+from dotenv import load_dotenv
+
+# Load environment variables
+load_dotenv()
+
+# Database connection
+connection = psycopg2.connect(
+    host=os.getenv('DATABASE_HOST'),
+    database=os.getenv('DATABASE_NAME'),
+    user=os.getenv('DATABASE_USER'),
+    password=os.getenv('DATABASE_PASSWORD'),
+    port=os.getenv('DATABASE_PORT'))
 
 try:
   videoParam = str(sys.argv[1])
