@@ -41,10 +41,10 @@ def connectToDatabase():
     return None
 
 
-def saveInDatabase(connection, cv_id):
+def saveInDatabase(connection):
   try:
     connection.cursor().execute(
-        'INSERT INTO "public"."vehicles" (time, cv_id) VALUES (CURRENT_TIMESTAMP, %s)', (str(cv_id)))
+        'INSERT INTO "public"."vehicles" (time, cv_id) VALUES (CURRENT_TIMESTAMP)')
     # Save changes
     connection.commit()
   except Exception as e:
@@ -109,7 +109,7 @@ def main():
       cv2.rectangle(roi, (x, y), (x + w, y + h), (0, 255, 0), 3)
       # Save in database
       if id not in savedVehicles:
-        saveInDatabase(dbConnection, id)
+        saveInDatabase(dbConnection)
         savedVehicles.append(id)
 
     # cv2.imshow("roi", roi)
