@@ -46,9 +46,7 @@ def saveInDatabase(connection, cv_id):
     connection.cursor().execute(
         'INSERT INTO "public"."vehicles" (time, cv_id) VALUES (CURRENT_TIMESTAMP, %s)', (str(cv_id)))
     # Save changes
-    print('XD')
     connection.commit()
-    print('XD 21')
   except Exception as e:
     print('Error while saving in database')
     print(e)
