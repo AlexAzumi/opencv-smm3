@@ -71,11 +71,13 @@ def main():
     region = [340, 720, 500, 800]
   elif videoParam == 'video_2':
     capture = cv2.VideoCapture("highway_2.m4v")
-    region = [500, 720, 500, 1280]
+    region = [600, 720, 600, 1280]
+  elif videoParam == 'video_3':
+    capture = cv2.VideoCapture("highway_3.mp4")
+    region = [0, 1080, 0, 1920]
 
-  # Object detection from Stable camera
-  object_detector = cv2.createBackgroundSubtractorMOG2(
-      history=100, varThreshold=40)
+  # Trained XML classifier describes some features of some objects we want to detect
+  car_cascade = cv2.CascadeClassifier("cars.xml")
 
   while True:
     ret, frame = capture.read()
@@ -83,37 +85,14 @@ def main():
     # Extract "region of interest"
     roi = frame[region[0]: region[1], region[2]: region[3]]
 
-    # 1. Object detection
-    mask = object_detector.apply(roi)
-    _, mask = cv2.threshold(mask, 254, 255, cv2.THRESH_BINARY)
-    contours, _ = cv2.findContours(
-        mask, cv2.RETR_TREE, cv2.CHAIN_APPROX_SIMPLE)
-    detections = []
+    gray = cv2.cvtColor(roi, cv2.COLOR_BGR2GRAY)
 
-    for cnt in contours:
-      # Calculate area and remove small elements
-      area = cv2.contourArea(cnt)
+    cars = car_cascade.detectMultiScale(gray, 1.1, 1)
 
-      if area > 100:
-        # cv2.drawContours(roi, [cnt], -1, (0, 255, 0), 2)
-        x, y, w, h = cv2.boundingRect(cnt)
+    for (x, y, w, h) in cars:
+      cv2.rectangle(roi, (x, y), (x + w, y + h), (0, 0, 255), 2)
 
-        detections.append([x, y, w, h])
-
-    # 2. Object traking
-    boxes_ids = tracker.update(detections)
-    for box_id in boxes_ids:
-      x, y, w, h, id = box_id
-      cv2.putText(roi, str(id), (x, y - 15),
-                  cv2.FONT_HERSHEY_PLAIN, 2, (255, 0, 0), 2)
-      cv2.rectangle(roi, (x, y), (x + w, y + h), (0, 255, 0), 3)
-      # Save in database
-      if id not in savedVehicles:
-        saveInDatabase(dbConnection)
-        savedVehicles.append(id)
-
-    # cv2.imshow("roi", roi)
-    # cv2.imshow("Mask", mask)
+    cv2.imshow("Region of interest", roi)
     cv2.imshow("Computer Vision | Luxtlalli", frame)
 
     # Wait for a key press
