@@ -74,10 +74,10 @@ def main():
     region = [600, 720, 600, 1280]
   elif videoParam == 'video_3':
     capture = cv2.VideoCapture("highway_3.mp4")
-    region = [0, 1080, 0, 1920]
+    region = [150, 360, 0, 500]
 
   # Trained XML classifier describes some features of some objects we want to detect
-  car_cascade = cv2.CascadeClassifier("cars.xml")
+  car_cascade = cv2.CascadeClassifier("carx.xml")
 
   while True:
     ret, frame = capture.read()
@@ -87,12 +87,12 @@ def main():
 
     gray = cv2.cvtColor(roi, cv2.COLOR_BGR2GRAY)
 
-    cars = car_cascade.detectMultiScale(gray, 1.1, 1)
+    cars = car_cascade.detectMultiScale(gray, 1.1, 2)
 
     for (x, y, w, h) in cars:
-      cv2.rectangle(roi, (x, y), (x + w, y + h), (0, 0, 255), 2)
+      cv2.rectangle(roi, (x, y), (x + w, y + h), (0, 255, 255), 3)
 
-    cv2.imshow("Region of interest", roi)
+    #cv2.imshow("Region of interest", roi)
     cv2.imshow("Computer Vision | Luxtlalli", frame)
 
     # Wait for a key press
