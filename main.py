@@ -94,7 +94,7 @@ def main():
       cv2.putText(roi, str(id), (x, y - 15),
                   cv2.FONT_HERSHEY_PLAIN, 2, (255, 0, 0), 2)
       # Save in database
-      if id not in savedVehicles:
+      if id not in savedVehicles and dbConnection is not None:
         saveInDatabase(dbConnection)
         savedVehicles.append(id)
 
